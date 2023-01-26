@@ -1,0 +1,68 @@
+* region-bindings.el
+
+(Global) Minor mode for binding keys while the mark is active.
+There's another package with the same name [[https://github.com/fgallina/region-bindings-mode][region-bindings-mode]], however was not updated in a long time, and it had issues with how it works.
+In particular, the region was not properly managed when not using the =transient-mark-mode=.
+This package doesn't have this problem.
+
+Install this package either by using something like [[https://github.com/raxod502/straight.el][straight.el]] or manually putting =region-bindings.el= to your load path.
+Then =require= the package and enable the mode globally, or use =use-package=:
+
+#+begin_src emacs-lisp
+(use-package region-bindings
+  :config
+  (global-region-bindings-mode 1))
+#+end_src
+
+When region is activated, =rbm= lighter will be displayed in the mode-line.
+
+** Configuration
+
+This package comes with a set of predefined keybindings:
+
+- =r= - =replace-string= in active region.
+- =R= - =replace-regexp= in active region.
+- ="= - =region-bindings-doublequote= enclose region in double-quotes, escaping other double-quotes within the region.
+- =q= - =region-bindings-disable= disable region bindings temporarily for the active region.
+  Bindings will be re-enabled when new region is activated.
+
+All bindings are stored in the =region-bindings-mode-map=.
+This package is most useful when combined with other packages that provide commands that act on the active region.
+
+*** multiple-cursors.el
+
+This package is quite handy when used with [[https://github.com/magnars/multiple-cursors.el][multiple-cursors]].
+For example, you can select a region, hit =s=, enter a regular expression, and every entry will have a cursor.
+Bindings are not set by default by the package, but here's a possible configuration:
+
+#+begin_src emacs-lisp
+(use-package multiple-cursors
+  :bind
+  ( :map region-bindings-mode-map
+    ("n" . mc/mark-next-symbol-like-this)
+    ("N" . mc/mark-next-like-this)
+    ("p" . mc/mark-previous-symbol-like-this)
+    ("P" . mc/mark-previous-like-this)
+    ("a" . mc/mark-all-symbols-like-this)
+    ("A" . mc/mark-all-like-this)
+    ("s" . mc/mark-all-in-region-regexp)
+    ("l" . mc/edit-ends-of-lines)))
+#+end_src
+
+*** puni
+
+[[https://github.com/AmaiKinono/puni][puni]] comes with a set of wrapping commands that act on the active region:
+
+#+begin_src emacs-lisp
+(use-package puni
+  :bind ( :map region-bindings-mode-map
+          ("(" . puni-wrap-round)
+          ("[" . puni-wrap-square)
+          ("{" . puni-wrap-curly)
+          ("<" . puni-wrap-angle)))
+#+end_src
+
+** Contributing
+
+Please do.
+Read the [[file:CONTRIBUTING.org][contribution guide]] for more information.
